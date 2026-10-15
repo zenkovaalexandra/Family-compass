@@ -1,0 +1,804 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Чтение и развитие речи — Семейный компас</title></head><body><nav class="site-nav"><a href="index.html">← Все темы</a><a href="#materials">Дополнительные карточки ↓</a></nav> <section id="rk-app" aria-label="Игра «Семейный компас»"> <div class="rk-shell"> <header class="rk-header"> <h1>Семейный компас</h1> <div class="rk-header-right"> <div class="rk-header-badges"> <img class="rk-badge-logo" src="assets/logo.svg" alt="Конкурс «Воспитатель года России 2026»" /> </div> <div class="rk-session-timer"> <span class="rk-progress__label">Время встречи</span> <strong id="rk-session-time">20:00</strong> <button id="rk-session-toggle" class="rk-text-button" type="button">Старт</button> </div> <div class="rk-progress" aria-live="polite"> <span class="rk-progress__label">Открыто вопросов</span> <strong><span id="rk-progress-current">0</span> из <span id="rk-progress-total">10</span></strong> <div class="rk-progress__track" aria-hidden="true"><span id="rk-progress-bar"></span></div> </div> </div> </header> <main> <section id="rk-wheel-view" class="rk-view" aria-labelledby="rk-wheel-title"> <div class="rk-wheel-layout"> <div class="rk-wheel-copy"> <h2 id="rk-wheel-title">Чтение и развитие речи</h2> <button id="rk-spin" class="rk-button rk-button--primary" type="button"> <span aria-hidden="true">↻</span> Раскрутить компас
+</button> <p id="rk-status" class="rk-status" aria-live="polite">Готовы к первому ходу</p> </div> <div class="rk-compass-wrap" id="rk-compass-wrap"> <div class="rk-compass" id="rk-compass" role="img" aria-label="Компас: вопросы темы встречи и особые секторы"> <div id="rk-sector-labels" class="rk-sector-labels" aria-hidden="true"></div> <div id="rk-needle-turn" class="rk-needle-turn" aria-hidden="true"> <span class="rk-needle-head"></span> <span class="rk-needle-line"></span> </div> <div class="rk-center" aria-hidden="true"><span></span></div> </div> </div> </div> </section> <section id="rk-card-view" class="rk-view" hidden aria-labelledby="rk-card-title"> <div class="rk-card-topline"> <button id="rk-back" class="rk-back" type="button" aria-label="Вернуться к компасу">← К компасу</button> <span id="rk-card-number" class="rk-card-number"></span> </div> <div id="rk-question-card"> <h2 id="rk-card-title"></h2> <div id="question-media" class="question-media"><div class="media-tabs"><button type="button" id="show-extremes" aria-pressed="true">Две крайности</button><button type="button" id="show-associations" aria-pressed="false">Ассоциации</button></div><a id="question-image-link" target="_blank" rel="noopener"><img id="question-image" alt=""></a><p class="media-hint">Нажмите на изображение, чтобы открыть крупнее</p></div><button id="rk-reveal" class="rk-button rk-button--primary rk-reveal" type="button">Обсудили? Открыть ориентир →</button> <article id="rk-orientir" class="rk-orientir" hidden tabindex="-1"> <span>Методический ориентир</span> <h3 id="rk-orientir-title"></h3> <p id="rk-orientir-text"></p> <div class="rk-practice"> <strong>Можно попробовать</strong> <p id="rk-practice-text"></p> </div> </article> </div> <div id="rk-special-card" class="rk-special" hidden> <div id="rk-special-icon" class="rk-special__icon" aria-hidden="true"></div> <span id="rk-special-kicker" class="rk-topic"></span> <h2 id="rk-special-title"></h2> <p id="rk-special-text"></p> <div id="rk-special-note" class="rk-special__note"></div> </div> </section> <section id="rk-summary-view" class="rk-view" hidden aria-labelledby="rk-summary-title"> <div class="rk-summary-head"> <span class="rk-step">Финал встречи</span> <h2 id="rk-summary-title">У каждой семьи — свой маршрут</h2> <p>Чтение и развитие речи — это не проверка знаний и не гонка за правильными ответами. Это живой диалог, совместное чтение и бережная поддержка детской инициативы.</p> </div> <div id="rk-summary-list" class="rk-summary-list"></div> <blockquote>Речь ребёнка развивается там, где его слушают, с ним разговаривают, вместе читают и дают возможность выразить собственную мысль.</blockquote> </section> </main> <footer class="rk-action-bar"> <div id="rk-wheel-actions" class="rk-bottom-actions"> <button id="rk-finish-from-wheel" class="rk-button rk-button--quiet" type="button">Завершить встречу</button> <button id="rk-reset" class="rk-text-button" type="button">Начать заново</button> </div> <div id="rk-card-actions" class="rk-next-row" hidden> <button id="rk-next" class="rk-button rk-button--primary" type="button">Следующий вопрос →</button> <button id="rk-finish-from-card" class="rk-button rk-button--quiet" type="button">Завершить встречу</button> </div> <div id="rk-summary-actions" class="rk-next-row" hidden> <button id="rk-continue" class="rk-button rk-button--primary" type="button">Продолжить игру</button> <button id="rk-summary-reset" class="rk-button rk-button--quiet" type="button">Начать новую встречу</button> </div> </footer> </div> <style>
+#rk-app {
+--rk-ink: #3f4652;
+--rk-muted: #7d8794;
+--rk-paper: #faf8f6;
+--rk-blue: #5f86b0;
+--rk-blue-soft: #e3edf5;
+--rk-green: #5f86b0;
+--rk-green-soft: #e3edf5;
+--rk-peach: #c66f95;
+--rk-peach-soft: #f6e0ea;
+--rk-yellow: #c9a066;
+--rk-yellow-soft: #f7ecd7;
+--rk-violet: #8f7fae;
+--rk-line: #e4e1e6;
+--rk-shadow: 0 24px 70px rgba(63, 70, 82, .16);
+display: flex;
+align-items: center;
+justify-content: center;
+height: 100dvh;
+color: var(--rk-ink);
+font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+font-size: 16px;
+line-height: 1.44;
+padding: clamp(6px, 1.6vw, 18px);
+background:
+linear-gradient(90deg, transparent 0 8%, rgba(95,134,176,.07) 8% calc(8% + 1px), transparent calc(8% + 1px)),
+repeating-linear-gradient(0deg, rgba(95,134,176,.05) 0 1px, transparent 1px 32px),
+#faf8f6;
+box-sizing: border-box;
+overflow: hidden;
+}
+#rk-app *, #rk-app *::before, #rk-app *::after { box-sizing: border-box; }
+#rk-app [hidden] { display: none !important; }
+#rk-app button { font: inherit; }
+#rk-app .rk-shell {
+display: flex;
+flex-direction: column;
+width: min(1180px, 100%);
+max-height: 100%;
+margin: 0 auto;
+background: rgba(255,253,249,.95);
+border: 1px solid rgba(120,130,145,.2);
+border-radius: 22px;
+box-shadow: var(--rk-shadow);
+overflow: hidden;
+}
+#rk-app .rk-header {
+flex: 0 0 auto;
+display: flex;
+justify-content: space-between;
+gap: 14px;
+align-items: center;
+padding: clamp(6px, 1vw, 10px) clamp(14px, 3vw, 32px);
+border-bottom: 1px solid var(--rk-line);
+}
+#rk-app .rk-header-right {
+display: flex;
+flex-direction: row;
+align-items: center;
+gap: 14px;
+}
+#rk-app .rk-header-badges {
+display: flex;
+align-items: center;
+gap: 10px;
+}
+#rk-app .rk-badge-logo { height: 60px; width: auto; object-fit: contain; opacity: .97; }
+#rk-app .rk-step,
+#rk-app .rk-topic,
+#rk-app .rk-discussion__eyebrow,
+#rk-app .rk-orientir > span {
+display: inline-block;
+margin: 0 0 4px;
+color: var(--rk-blue);
+font-size: .76rem;
+font-weight: 800;
+letter-spacing: .08em;
+text-transform: uppercase;
+}
+#rk-app h1,
+#rk-app h2,
+#rk-app h3,
+#rk-app p { margin-top: 0; }
+#rk-app h1 {
+margin-bottom: 0;
+font-family: Georgia, "Times New Roman", serif;
+font-size: clamp(1.6rem, 3vw, 2.3rem);
+line-height: 1.02;
+letter-spacing: -.03em;
+color: var(--rk-ink);
+}
+#rk-app h2 {
+margin-bottom: 8px;
+font-family: Georgia, "Times New Roman", serif;
+font-size: clamp(1.4rem, 2.8vw, 2.05rem);
+line-height: 1.1;
+letter-spacing: -.02em;
+}
+#rk-app #rk-wheel-title { font-size: clamp(1.8rem, 4.2vw, 2.9rem); line-height: 1.15; margin-bottom: 14px; }
+#rk-app h3 { line-height: 1.24; }
+#rk-app .rk-lead { display: none; }
+#rk-app .rk-progress {
+flex: 0 0 150px;
+padding: 8px 12px;
+border: 1px solid var(--rk-line);
+border-radius: 13px;
+background: var(--rk-paper);
+}
+#rk-app .rk-progress__label { display: block; color: var(--rk-muted); font-size: .72rem; }
+#rk-app .rk-progress strong { display: block; margin: 1px 0 5px; font-size: 1rem; }
+#rk-app .rk-progress__track { height: 5px; overflow: hidden; background: #e7eef4; border-radius: 99px; }
+#rk-app .rk-progress__track span { display: block; width: 0; height: 100%; background: var(--rk-green); border-radius: inherit; transition: width .35s ease; }
+#rk-app .rk-session-timer {
+flex: 0 0 auto;
+padding: 8px 16px;
+border: 1px solid var(--rk-line);
+border-radius: 13px;
+background: var(--rk-paper);
+text-align: center;
+}
+#rk-app .rk-session-timer strong {
+display: block;
+margin: 1px 0 3px;
+color: var(--rk-blue);
+font: 800 1.5rem/1 Georgia, serif;
+font-variant-numeric: tabular-nums;
+}
+#rk-app .rk-session-timer .rk-text-button { min-height: auto; padding: 0; font-size: .78rem; }
+#rk-app main { flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; }
+#rk-app .rk-view {
+flex: 1 1 auto;
+width: 100%;
+min-height: 0;
+overflow-y: auto;
+padding: clamp(10px, 2vw, 22px) clamp(14px, 3vw, 32px);
+display: flex;
+flex-direction: column;
+justify-content: flex-start;
+}
+#rk-app #rk-wheel-view { justify-content: center; }
+#rk-app .rk-wheel-layout {
+display: grid;
+grid-template-columns: minmax(220px, .9fr) minmax(240px, 1.1fr);
+gap: clamp(14px, 3vw, 40px);
+align-items: center;
+}
+#rk-app .rk-wheel-copy > p:not(.rk-status) { max-width: 480px; margin-bottom: 6px; color: var(--rk-muted); font-size: .98rem; }
+#rk-app .rk-button {
+min-height: 40px;
+padding: 9px 16px;
+border: 1px solid transparent;
+border-radius: 11px;
+cursor: pointer;
+font-size: .92rem;
+font-weight: 750;
+transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+#rk-app .rk-button:hover { transform: translateY(-2px); }
+#rk-app .rk-button:focus-visible,
+#rk-app .rk-text-button:focus-visible,
+#rk-app .rk-back:focus-visible { outline: 3px solid rgba(95,134,176,.35); outline-offset: 3px; }
+#rk-app .rk-button:disabled { opacity: .55; cursor: wait; transform: none; }
+#rk-app .rk-button--primary { color: #fff; background: var(--rk-blue); box-shadow: 0 8px 18px rgba(95,134,176,.32); }
+#rk-app .rk-button--primary:hover { background: #4c6d8f; }
+#rk-app .rk-button--secondary { color: var(--rk-blue); background: var(--rk-blue-soft); border-color: #c9dbeb; }
+#rk-app .rk-button--quiet { color: var(--rk-ink); background: #fff; border-color: var(--rk-line); }
+#rk-app #rk-spin {
+min-height: 62px;
+padding: 16px 30px;
+width: 100%;
+max-width: 380px;
+border-radius: 16px;
+font-size: 1.18rem;
+font-weight: 800;
+box-shadow: 0 12px 26px rgba(95,134,176,.35);
+}
+#rk-app #rk-spin span { font-size: 1.3rem; }
+#rk-app .rk-status { min-height: 18px; margin: 8px 0 0; color: var(--rk-muted); font-size: .9rem; }
+#rk-app .rk-compass-wrap { position: relative; width: min(420px, 74vh, 100%); aspect-ratio: 1; margin: auto; transition: width .3s ease; }
+#rk-app .rk-compass-wrap::before,
+#rk-app .rk-compass-wrap::after {
+content: "";
+position: absolute;
+border-radius: 50%;
+pointer-events: none;
+}
+#rk-app .rk-compass-wrap::before { inset: -12px; border: 1px dashed rgba(95,134,176,.32); }
+#rk-app .rk-compass-wrap::after { inset: 6%; border: 1px solid rgba(255,255,255,.72); }
+#rk-app .rk-compass {
+position: absolute;
+inset: 0;
+border: 7px solid #fff;
+border-radius: 50%;
+background: conic-gradient(from -12.857deg,
+#5f86b0 0 25.714deg, #c66f95 25.714deg 51.429deg,
+#5f86b0 51.429deg 77.143deg,
+#c66f95 77.143deg 102.857deg, #5f86b0 102.857deg 128.571deg,
+#c66f95 128.571deg 154.286deg,
+#5f86b0 154.286deg 180deg, #c66f95 180deg 205.714deg,
+#5f86b0 205.714deg 231.429deg,
+#c66f95 231.429deg 257.143deg, #5f86b0 257.143deg 282.857deg,
+#c66f95 282.857deg 308.571deg,
+#5f86b0 308.571deg 334.286deg, #c66f95 334.286deg 360deg);
+box-shadow: 0 16px 40px rgba(63,70,82,.3), inset 0 0 0 2px rgba(63,70,82,.2);
+}
+#rk-app .rk-compass::before {
+content: "";
+position: absolute;
+inset: 18%;
+border: 1px solid rgba(255,255,255,.36);
+border-radius: 50%;
+background: rgba(255,255,255,.07);
+backdrop-filter: blur(1px);
+}
+#rk-app .rk-sector-labels { position: absolute; inset: 0; }
+#rk-app .rk-sector-label {
+position: absolute;
+left: var(--rk-x);
+top: var(--rk-y);
+display: grid;
+place-items: center;
+width: 30px;
+height: 30px;
+transform: translate(-50%, -50%);
+color: #fff;
+font-weight: 850;
+font-size: 1.55rem;
+text-shadow: 0 1px 2px rgba(0,0,0,.55), 0 0 6px rgba(0,0,0,.35);
+transition: opacity .25s ease;
+}
+#rk-app .rk-sector-label.is-used { opacity: .32; }
+#rk-app .rk-sector-label--special { color: #18324a; font-size: 1.12rem; text-shadow: none; }
+#rk-app .rk-needle-turn {
+position: absolute;
+inset: 0;
+z-index: 3;
+transform: rotate(0deg);
+transition: transform 3.4s cubic-bezier(.12,.7,.12,1);
+}
+#rk-app .rk-needle-line {
+position: absolute;
+left: calc(50% - 3px);
+top: 14%;
+width: 6px;
+height: 36%;
+border-radius: 99px 99px 4px 4px;
+background: #fff;
+box-shadow: 0 4px 14px rgba(63,70,82,.3);
+}
+#rk-app .rk-needle-head {
+position: absolute;
+z-index: 1;
+left: calc(50% - 9px);
+top: 9%;
+width: 0;
+height: 0;
+border-left: 9px solid transparent;
+border-right: 9px solid transparent;
+border-bottom: 19px solid #fff;
+filter: drop-shadow(0 3px 4px rgba(63,70,82,.26));
+}
+#rk-app .rk-center {
+position: absolute;
+z-index: 4;
+inset: 50% auto auto 50%;
+width: 48px;
+height: 48px;
+transform: translate(-50%,-50%);
+display: grid;
+place-items: center;
+border: 5px solid #fff;
+border-radius: 50%;
+background: var(--rk-ink);
+box-shadow: 0 7px 18px rgba(63,70,82,.32);
+}
+#rk-app .rk-center span { width: 9px; height: 9px; border-radius: 50%; background: var(--rk-yellow); }
+#rk-app .rk-action-bar {
+flex: 0 0 auto;
+padding: 14px clamp(14px, 3vw, 32px);
+border-top: 1px solid var(--rk-line);
+background: var(--rk-paper);
+}
+#rk-app .rk-bottom-actions,
+#rk-app .rk-next-row {
+display: flex;
+flex-wrap: wrap;
+align-items: center;
+gap: 10px;
+}
+#rk-app .rk-bottom-actions { justify-content: space-between; }
+#rk-app .rk-next-row { justify-content: flex-end; }
+#rk-app .rk-text-button,
+#rk-app .rk-back {
+min-height: 36px;
+padding: 6px 2px;
+border: 0;
+color: var(--rk-muted);
+background: transparent;
+cursor: pointer;
+font-size: .86rem;
+text-decoration: underline;
+text-underline-offset: 3px;
+}
+#rk-app .rk-card-topline { flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
+#rk-app .rk-card-number { color: var(--rk-muted); font-size: .82rem; font-weight: 700; }
+#rk-app #rk-question-card { display: flex; flex-direction: column; align-items: center; min-height: 0; padding: 0 0 4px; }
+#rk-app #rk-question-card .rk-reveal { max-width: 420px; }
+#rk-app #rk-card-title { font-size: clamp(1.8rem, 4.2vw, 2.9rem); line-height: 1.15; margin: 0 auto 24px; max-width: 900px; text-align: center; }
+#rk-app .rk-positions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 10px; flex: 0 0 auto; }
+#rk-app .rk-position {
+padding: 12px 14px;
+border: 1px solid;
+border-radius: 16px;
+}
+#rk-app .rk-position--one { background: var(--rk-green-soft); border-color: #bcd0e2; }
+#rk-app .rk-position--two { background: var(--rk-peach-soft); border-color: #e6bdd0; }
+#rk-app .rk-position > span {
+display: block;
+margin-bottom: 6px;
+color: var(--rk-muted);
+font-size: .72rem;
+font-weight: 850;
+letter-spacing: .05em;
+text-transform: uppercase;
+}
+#rk-app .rk-position p {
+margin: 0;
+font-family: Georgia, "Times New Roman", serif;
+font-size: clamp(.92rem, 1.9vw, 1.08rem);
+line-height: 1.34;
+text-align: left;
+}
+#rk-app .rk-reveal { width: 100%; margin-top: 18px; flex: 0 0 auto; }
+#rk-app .rk-orientir {
+flex: 0 0 auto;
+max-width: 880px;
+margin: 0 auto;
+padding: 12px clamp(22px, 4vw, 40px) 10px;
+border: 2px solid #b9cfe3;
+border-radius: 24px;
+background: linear-gradient(135deg, #e9f1f7, #faf8f6);
+scroll-margin-top: 12px;
+animation: rk-rise .35s ease both;
+}
+#rk-app .rk-orientir > span { color: var(--rk-green); font-size: .9rem; }
+#rk-app .rk-orientir h3 { margin-bottom: 6px; font: 700 clamp(1.6rem, 4vw, 2.4rem)/1.18 Georgia, serif; }
+#rk-app .rk-orientir > p { max-width: 900px; font-size: clamp(1.05rem, 2.2vw, 1.3rem); line-height: 1.5; }
+#rk-app .rk-practice { margin-top: 8px; padding: 10px 14px; border-left: 4px solid var(--rk-yellow); background: #fff; border-radius: 0 14px 14px 0; }
+#rk-app .rk-practice strong { display: block; margin-bottom: 5px; font-size: 1.05rem; }
+#rk-app .rk-practice p { margin: 0; font-size: 1.05rem; }
+#rk-app .rk-special { max-width: 720px; margin: auto; padding: clamp(18px, 4vw, 40px); text-align: center; border: 1px solid var(--rk-line); border-radius: 20px; background: linear-gradient(145deg, #faf1de, #f3edf5); box-shadow: 0 14px 36px rgba(63,70,82,.16); }
+#rk-app .rk-special__icon { display: grid; place-items: center; width: 60px; height: 60px; margin: 0 auto 12px; border-radius: 50%; background: var(--rk-yellow-soft); font-size: 2rem; }
+#rk-app .rk-special h2 { margin-bottom: 10px; }
+#rk-app .rk-special > p { max-width: 560px; margin: 0 auto; color: var(--rk-muted); font-size: .92rem; }
+#rk-app .rk-special__note { margin-top: 14px; padding: 10px 14px; border-radius: 12px; background: #fff; font-weight: 700; font-size: .86rem; }
+#rk-app .rk-summary-head { max-width: 780px; flex: 0 0 auto; }
+#rk-app .rk-summary-head > p { color: var(--rk-muted); font-size: .84rem; margin-bottom: 0; }
+#rk-app .rk-summary-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; margin: 10px 0; }
+#rk-app .rk-summary-item { padding: 8px 10px; border: 1px solid var(--rk-line); border-radius: 12px; background: var(--rk-paper); }
+#rk-app .rk-summary-item span { display: block; margin-bottom: 2px; color: var(--rk-blue); font-size: .64rem; font-weight: 850; text-transform: uppercase; }
+#rk-app .rk-summary-item p { margin: 0; font-size: .8rem; line-height: 1.28; }
+#rk-app .rk-summary-empty { grid-column: 1/-1; color: var(--rk-muted); }
+#rk-app blockquote { flex: 0 0 auto; margin: 10px 0 0; padding: 12px clamp(12px, 3vw, 24px); border: 0; border-left: 5px solid var(--rk-yellow); background: var(--rk-yellow-soft); font: 700 clamp(.92rem, 1.8vw, 1.2rem)/1.32 Georgia, serif; }
+@keyframes rk-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 820px) {
+#rk-app { padding: 4px; }
+#rk-app .rk-shell { border-radius: 16px; }
+#rk-app .rk-wheel-layout { grid-template-columns: 1fr; gap: 8px; }
+#rk-app .rk-wheel-copy { text-align: center; }
+#rk-app .rk-wheel-copy > p:not(.rk-status) { margin-left: auto; margin-right: auto; }
+#rk-app .rk-compass-wrap { width: min(280px, 46vh, 80vw); }
+}
+@media (max-width: 560px) {
+#rk-app .rk-header { flex-direction: row; align-items: center; }
+#rk-app .rk-header-badges { display: none; }
+#rk-app .rk-progress { flex: 0 0 96px; padding: 6px 8px; }
+#rk-app .rk-progress strong { font-size: .8rem; }
+#rk-app .rk-positions { grid-template-columns: 1fr; }
+#rk-app .rk-next-row .rk-button, #rk-app .rk-bottom-actions .rk-button { width: 100%; }
+#rk-app .rk-bottom-actions { justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+#rk-app *, #rk-app *::before, #rk-app *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+</style> <script>
+(function () {
+'use strict';
+var root = document.getElementById('rk-app');
+if (!root || root.getAttribute('data-ready') === 'true') return;
+root.setAttribute('data-ready', 'true');
+// КАРТОЧКИ ИГРЫ. Текст можно менять прямо здесь, не затрагивая механику.
+var questions = [
+{
+topic: 'Чтение и развитие речи',
+title: 'Как развивать у детей словотворчество?',
+orientirTitle: 'Поддерживайте словотворчество и мягко показывайте языковую норму',
+orientir: 'Придуманные ребёнком слова — естественное проявление языковой активности: он замечает закономерности речи и пробует создавать слова по знакомым моделям. Высмеивать или резко обрывать такие попытки не стоит. При этом взрослый остаётся речевым образцом и спокойно употребляет правильный вариант в ответной фразе, не превращая разговор в постоянное исправление ошибок.',
+practice: 'Заведите «Семейный словарик»: запишите забавное придуманное слово, спросите ребёнка, что оно означает, а затем в разговоре доброжелательно назовите общепринятое слово.'
+},
+{
+topic: 'Чтение и развитие речи',
+title: 'Как художественное слово развивает речь ребёнка?',
+orientirTitle: 'Читайте выразительно, обсуждайте и возвращайтесь к тексту',
+orientir: 'Художественный текст обогащает словарь, знакомит ребёнка с образными выражениями, разными построениями фраз и интонациями, помогает учиться понимать последовательность событий и чувства героев. Для этого полезны и эмоциональное слушание, и разговор о прочитанном, и пересказ, драматизация или заучивание небольших понравившихся фрагментов. Ни одно из этих средств не должно становиться обязательной проверкой после каждого чтения.',
+practice: 'После чтения выберите один короткий эпизод и задайте два открытых вопроса: «Что тебя удивило?» и «Как бы ты поступил на месте героя?». Если ребёнок хочет, разыграйте эпизод по ролям.'
+},
+{
+topic: 'Чтение и развитие речи',
+title: 'Какие игры развивают речь и мелкую моторику?',
+orientirTitle: 'Соединяйте действия руками с содержательным разговором',
+orientir: 'И специальные пособия, и обычные бытовые материалы могут быть полезны, если подходят ребёнку по возрасту, безопасны и вызывают интерес. Манипуляции руками развивают точность и координацию движений, но сами по себе не гарантируют развитие речи. Речевой эффект появляется, когда ребёнок во время игры называет предметы и действия, сравнивает, объясняет замысел, задаёт вопросы и рассказывает о результате.',
+practice: 'Предложите ребёнку выложить узор из безопасных крупных деталей или собрать модель из конструктора, а затем попросите объяснить, как он это сделал и что можно изменить.'
+},
+{
+topic: 'Чтение и развитие речи',
+title: 'Как развивать речь ребёнка в повседневных делах?',
+orientirTitle: 'Используйте ежедневный диалог и короткие речевые игры',
+orientir: 'Повседневные ситуации дают ребёнку настоящий повод говорить: просить, объяснять, сравнивать, договариваться и рассказывать. Однако одно лишь присутствие рядом со взрослыми не всегда обеспечивает речевую практику. Важно обращаться к ребёнку, внимательно слушать ответ, давать время сформулировать мысль и иногда предлагать короткие игровые задания на описание, рассказывание или подбор слов — без превращения дома в школьный урок.',
+practice: 'Во время общего дела попросите ребёнка стать «ведущим»: назвать последовательность действий, объяснить выбор или описать предмет так, чтобы взрослый его угадал.'
+},
+{
+topic: 'Чтение и развитие речи',
+title: 'Как потешки помогают развивать речь малыша?',
+orientirTitle: 'Подбирайте фольклор по возрасту и включайте его в живое общение',
+orientir: 'Ритм, повтор, рифма и выразительная интонация потешек помогают ребёнку вслушиваться в звучание речи, запоминать слова, согласовывать речь с движением и эмоционально откликаться на обращение взрослого. Особенно естественны потешки в младшем возрасте. Старшим дошкольникам полезно расширять репертуар считалками, небылицами, скороговорками, загадками и другими жанрами фольклора, не заменяя ими всё речевое развитие.',
+practice: 'Выберите короткий фольклорный текст, произнесите его с движениями и предложите ребёнку изменить одно слово, придумать продолжение или подобрать похожую рифму.'
+},
+{
+topic: 'Чтение и развитие речи',
+title: 'Что почитать детям в семье?',
+orientirTitle: 'Сочетайте качество, разнообразие и выбор ребёнка',
+orientir: 'Домашнее чтение может включать народные и авторские сказки, стихи, рассказы, познавательные книги, качественную современную литературу и комиксы с понятным ребёнку содержанием. Важны соответствие возрасту, художественный уровень, безопасность содержания и интерес ребёнка. Только взрослый или только ребёнок не должны определять весь круг чтения: интерес поддерживает выбор, а взрослое сопровождение постепенно расширяет читательский опыт.',
+practice: 'Используйте правило двух книг: одну для совместного чтения выбирает ребёнок, вторую предлагает взрослый. После чтения решите вместе, какую книгу хочется продолжить или перечитать.'
+},
+{
+topic: 'Чтение и развитие речи',
+title: 'Почему сказки так важны для развития ребёнка?',
+orientirTitle: 'Сохраняйте сказки в круге чтения и обсуждайте их без готовых нравоучений',
+orientir: 'Сказка остаётся значимым жанром на протяжении всего дошкольного возраста: она развивает воображение, понимание причин и последствий, эмоциональную отзывчивость, связную речь и представления о поступках людей. При этом сказки не должны быть единственным чтением и не требуют от взрослого каждый раз сообщать ребёнку готовую мораль. Их полезно сочетать с реалистическими рассказами, поэзией и познавательной литературой.',
+practice: 'После сказки спросите: «Почему герой так поступил?», «Что он чувствовал?» и «Как ещё могла закончиться эта история?». Примите разные обоснованные версии ребёнка.'
+},
+{
+topic: 'Чтение и развитие речи',
+title: 'Как объяснить ребёнку значение пословиц и поговорок?',
+orientirTitle: 'Помогайте ребёнку открыть переносный смысл через разговор и примеры',
+orientir: 'Пословицы и поговорки содержат обобщённый и часто переносный смысл, поэтому дошкольнику бывает трудно понять их без опоры на конкретную ситуацию. Полезно сначала предложить ребёнку высказать предположение, затем разобрать знакомый пример и дать доступное объяснение. Ждать, пока смысл откроется полностью сам, так же неэффективно, как требовать заучить единственную формулировку без понимания.',
+practice: 'Выберите одну пословицу, вспомните вместе подходящую ситуацию из книги или жизни и придумайте случай, к которому эта пословица не подходит. Это помогает уточнить её смысл.'
+},
+{
+topic: 'Чтение и развитие речи',
+title: 'Как научить ребёнка пересказывать короткие тексты?',
+orientirTitle: 'Учите передавать смысл и последовательность, а не повторять дословно',
+orientir: 'Пересказ развивает понимание текста, память, словарь и связную речь, когда ребёнок передаёт основные события в понятной последовательности своими словами. Дословное воспроизведение не является главной целью. Взрослый может помочь вопросами, картинками, опорными словами или простым планом, а затем постепенно уменьшать подсказки. Исправления лучше давать после рассказа, не перебивая речевую попытку.',
+practice: 'После короткого текста вместе определите три части: начало, главное событие и конец. Нарисуйте к каждой простой знак и предложите ребёнку рассказать историю по этим трём опорам.'
+},
+{
+topic: 'Чтение и развитие речи',
+title: 'Как развивать речь через пальчиковые игры?',
+orientirTitle: 'Используйте пальчиковые игры как одно из средств речевого развития',
+orientir: 'Пальчиковые игры помогают развивать координацию движений, чувство ритма, внимание, подражание и взаимодействие со взрослым. Сопровождение движений словами создаёт дополнительную речевую практику, но такие игры не являются главным или обязательным условием появления речи. Основой речевого развития остаются содержательное общение, совместное чтение, игра, рассказывание и поддержка детской инициативы.',
+practice: 'Проведите короткую пальчиковую игру, затем предложите ребёнку самому выбрать движения к знакомой строчке или придумать одну новую фразу для продолжения.'
+}
+];
+var specialSectors = {
+candy: {
+type: 'candy', label: '🍬', kicker: 'Особый сектор', title: 'Любимое слово вашего ребёнка', icon: '🍬',
+text: 'Вспомните слово или выражение ребёнка, которое особенно вас радует или смешит.',
+note: 'Тёплое внимание к детской речи помогает ребёнку говорить свободнее и увереннее.'
+},
+trophy: {
+type: 'trophy', label: '🏆', kicker: 'Особый сектор', title: 'Недавнее речевое достижение', icon: '🏆',
+text: 'Расскажите, какое новое слово, рассказ, вопрос или высказывание ребёнка вы недавно заметили.',
+note: 'Небольшие речевые успехи становятся заметнее, когда взрослый слушает ребёнка внимательно.'
+},
+dice: {
+type: 'dice', label: '🎲', kicker: 'Особый сектор', title: 'Любимая семейная книга', icon: '🎲',
+text: 'Назовите книгу, сказку или историю, которую вам нравится читать вместе.',
+note: 'Совместное чтение укрепляет отношения и создаёт естественный повод для разговора.'
+},
+power: {
+type: 'power', label: '⚡', kicker: 'Особый сектор', title: 'Речевая суперсила вашего ребёнка', icon: '⚡',
+text: 'Что особенно хорошо получается у вашего ребёнка: задавать вопросы, придумывать истории, объяснять, слушать или рассказывать?',
+note: 'Опора на сильные стороны поддерживает интерес ребёнка к общению и чтению.'
+}
+};
+// Большое колесо — вопросы темы, каждый выпадает один раз за встречу.
+var questionSectors = questions.map(function (_, index) {
+return { type: 'question', questionIndex: index, label: String(index + 1) };
+});
+// Сначала случайно выпадают вопросы 2, 4, 5, 6 и 7.
+// После того как они закончатся, случайно выпадают остальные пять вопросов.
+var firstQuestionGroup = [1, 3, 4, 5, 6];
+var secondQuestionGroup = [0, 2, 7, 8, 9];
+// Весёлые бонусы показываются сразу, без вращения, и могут повторяться.
+var bonusSectors = [specialSectors.candy, specialSectors.trophy, specialSectors.dice, specialSectors.power];
+var storageKey = 'rk-family-compass-page239739309.html';
+var usedQuestions = [];
+var currentRotation = 0;
+var audioCtx = null;
+function getAudioCtx() {
+if (!audioCtx) {
+var Ctx = window.AudioContext || window.webkitAudioContext;
+if (!Ctx) return null;
+audioCtx = new Ctx();
+}
+if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+return audioCtx;
+}
+function playLandingChime() {
+var ctx = getAudioCtx();
+if (!ctx) return;
+try {
+[660, 880, 990].forEach(function (freq, i) {
+var osc = ctx.createOscillator();
+var gain = ctx.createGain();
+osc.type = 'sine';
+osc.frequency.value = freq;
+var t = ctx.currentTime + i * 0.09;
+gain.gain.setValueAtTime(0.0001, t);
+gain.gain.exponentialRampToValueAtTime(0.15, t + 0.02);
+gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
+osc.connect(gain);
+gain.connect(ctx.destination);
+osc.start(t);
+osc.stop(t + 0.42);
+});
+} catch (error) {}
+}
+function playTick() {
+var ctx = getAudioCtx();
+if (!ctx) return;
+try {
+var notes = [523.25, 587.33, 659.25, 783.99, 880.0, 987.77];
+var freq = notes[Math.floor(Math.random() * notes.length)];
+var t = ctx.currentTime;
+[1, 2].forEach(function (mult, i) {
+var osc = ctx.createOscillator();
+var gain = ctx.createGain();
+osc.type = 'sine';
+osc.frequency.value = freq * mult;
+var peak = i === 0 ? 0.1 : 0.032;
+gain.gain.setValueAtTime(0.0001, t);
+gain.gain.exponentialRampToValueAtTime(peak, t + 0.012);
+gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.17);
+osc.connect(gain);
+gain.connect(ctx.destination);
+osc.start(t);
+osc.stop(t + 0.19);
+});
+} catch (error) {}
+}
+var tickTimeoutId = null;
+function startSpinSound(totalMs) {
+var elapsed = 0;
+var delay = 55;
+function step() {
+if (elapsed >= totalMs) return;
+playTick();
+delay = Math.min(delay + 14, 260);
+elapsed += delay;
+tickTimeoutId = window.setTimeout(step, delay);
+}
+step();
+}
+function stopSpinSound() {
+if (tickTimeoutId) { window.clearTimeout(tickTimeoutId); tickTimeoutId = null; }
+}
+var el = function (id) { return root.querySelector('#' + id); };
+var views = [el('rk-wheel-view'), el('rk-card-view'), el('rk-summary-view')];
+function loadState() {
+try {
+var saved = JSON.parse(sessionStorage.getItem(storageKey) || '{}');
+if (Array.isArray(saved.usedQuestions)) {
+usedQuestions = saved.usedQuestions.filter(function (n) { return Number.isInteger(n) && n >= 0 && n < questionSectors.length; });
+}
+} catch (error) { usedQuestions = []; }
+}
+function saveState() {
+try { sessionStorage.setItem(storageKey, JSON.stringify({ usedQuestions: usedQuestions })); } catch (error) {}
+}
+var actionBarMap = {
+'rk-wheel-view': 'rk-wheel-actions',
+'rk-card-view': 'rk-card-actions',
+'rk-summary-view': 'rk-summary-actions'
+};
+function showView(view) {
+views.forEach(function (item) { item.hidden = item !== view; });
+Object.keys(actionBarMap).forEach(function (viewId) {
+el(actionBarMap[viewId]).hidden = view.id !== viewId;
+});
+root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function randomIndex(max) {
+if (window.crypto && window.crypto.getRandomValues) {
+var array = new Uint32Array(1);
+window.crypto.getRandomValues(array);
+return array[0] % max;
+}
+return Math.floor(Math.random() * max);
+}
+var sectorAngle = 360 / questionSectors.length;
+function paintCompass() {
+var step = sectorAngle;
+var stops = questionSectors.map(function (_, index) {
+var color = index % 2 === 0 ? '#5f86b0' : '#c66f95';
+return color + ' ' + (index * step).toFixed(3) + 'deg ' + ((index + 1) * step).toFixed(3) + 'deg';
+});
+el('rk-compass').style.background = 'conic-gradient(from ' + (-step / 2).toFixed(3) + 'deg, ' + stops.join(', ') + ')';
+}
+function renderSectorLabels() {
+var holder = el('rk-sector-labels');
+holder.innerHTML = '';
+questionSectors.forEach(function (sector, index) {
+var angle = index * sectorAngle * Math.PI / 180;
+var isUsed = usedQuestions.indexOf(sector.questionIndex) >= 0;
+var label = document.createElement('span');
+label.className = 'rk-sector-label' + (isUsed ? ' is-used' : '');
+label.style.setProperty('--rk-x', (50 + Math.sin(angle) * 39) + '%');
+label.style.setProperty('--rk-y', (50 - Math.cos(angle) * 39) + '%');
+label.textContent = sector.label;
+holder.appendChild(label);
+});
+}
+function updateProgress() {
+el('rk-progress-current').textContent = String(usedQuestions.length);
+el('rk-progress-total').textContent = String(questionSectors.length);
+el('rk-progress-bar').style.width = (usedQuestions.length / questionSectors.length * 100) + '%';
+renderSectorLabels();
+}
+var sessionSeconds = 20 * 60;
+var sessionTimerId = null;
+function updateSessionDisplay() {
+var min = Math.floor(sessionSeconds / 60);
+var sec = sessionSeconds % 60;
+el('rk-session-time').textContent = ('0' + min).slice(-2) + ':' + ('0' + sec).slice(-2);
+}
+function toggleSessionTimer() {
+if (sessionTimerId) {
+window.clearInterval(sessionTimerId);
+sessionTimerId = null;
+el('rk-session-toggle').textContent = 'Продолжить';
+return;
+}
+if (sessionSeconds <= 0) { sessionSeconds = 20 * 60; }
+el('rk-session-toggle').textContent = 'Пауза';
+sessionTimerId = window.setInterval(function () {
+sessionSeconds -= 1;
+if (sessionSeconds <= 0) {
+sessionSeconds = 0;
+window.clearInterval(sessionTimerId);
+sessionTimerId = null;
+el('rk-session-toggle').textContent = 'Время вышло';
+}
+updateSessionDisplay();
+}, 1000);
+}
+function resetSessionTimer() {
+if (sessionTimerId) { window.clearInterval(sessionTimerId); sessionTimerId = null; }
+sessionSeconds = 20 * 60;
+el('rk-session-toggle').textContent = 'Старт';
+updateSessionDisplay();
+}
+var questionImages = [["assets/d775de40a6910edf8d.webp", "assets/77b53094c23f31d23e.webp"], ["assets/4bbd715f0f1a259065.webp", "assets/3c57b464335d533742.webp"], ["assets/9a593c5db072706093.webp", "assets/d21e8eafed1b1517b5.webp"], ["assets/0d65278857e29c75e6.webp", "assets/93da3609358d6b5c78.webp"], ["assets/808a9e710115667899.webp", "assets/a6817842d343c5657f.webp"], ["assets/0f1e5c0eeeee2b431e.webp", "assets/dfd92a81d06e7e317d.webp"], ["assets/d2420249ab5cb8c5ca.webp", "assets/38101f663db43bf219.webp"], ["assets/ad8a7be6b5847e8b40.webp", "assets/0df70f366dd43afd90.webp"], ["assets/edf5fd99d4f2068889.webp", "assets/edc4a861ddc1848994.webp"], ["assets/4a2d00195f838b560e.webp", "assets/42f1fb46cbb72c44b6.webp"]];
+var activeImageQuestion = 0;
+function showQuestionImage(kind) {
+ var src=questionImages[activeImageQuestion][kind];
+ el('question-image').src=src;
+ el('question-image').alt=(kind===1?'Две крайности: ':'Ассоциации: ')+questions[activeImageQuestion].title;
+ el('question-image-link').href=src;
+ el('show-extremes').setAttribute('aria-pressed',String(kind===1));
+ el('show-associations').setAttribute('aria-pressed',String(kind===0));
+}
+el('show-extremes').addEventListener('click',function(){showQuestionImage(1);});
+el('show-associations').addEventListener('click',function(){showQuestionImage(0);});
+function renderQuestion(index) {
+activeImageQuestion=index; el("question-media").hidden=false; showQuestionImage(1);
+var q = questions[index];
+el('rk-question-card').hidden = false;
+el('rk-special-card').hidden = true;
+el('rk-card-number').textContent = 'Вопрос ' + (index + 1) + ' из ' + questions.length;
+el('rk-card-title').textContent = q.title;
+el('rk-card-title').hidden = false;
+el('rk-orientir-title').textContent = q.orientirTitle;
+el('rk-orientir-text').textContent = q.orientir;
+el('rk-practice-text').textContent = q.practice;
+el('rk-orientir').hidden = true;
+el('rk-reveal').hidden = false;
+el('rk-next').textContent = 'Следующий вопрос →';
+showView(el('rk-card-view'));
+}
+function renderSpecial(sector) {
+el('rk-question-card').hidden = true;
+el('rk-special-card').hidden = false;
+el('rk-card-number').textContent = 'Особый сектор';
+el('rk-special-icon').textContent = sector.icon;
+el('rk-special-kicker').textContent = sector.kicker;
+el('rk-special-title').textContent = sector.title;
+el('rk-special-text').textContent = sector.text;
+el('rk-special-note').textContent = sector.note;
+el('rk-next').textContent = 'К следующему вопросу →';
+}
+function spinQuestion() {
+var availableFirst = firstQuestionGroup.filter(function (index) { return usedQuestions.indexOf(index) < 0; });
+var availableSecond = secondQuestionGroup.filter(function (index) { return usedQuestions.indexOf(index) < 0; });
+var available = availableFirst.length ? availableFirst : availableSecond;
+if (!available.length) {
+el('rk-status').textContent = 'Все вопросы открыты — можно подвести итоги.';
+renderSummary();
+return;
+}
+var selected = available[randomIndex(available.length)];
+var button = el('rk-spin');
+button.disabled = true;
+el('rk-status').textContent = 'Компас выбирает направление…';
+startSpinSound(3500);
+var target = selected * sectorAngle;
+var normalized = ((currentRotation % 360) + 360) % 360;
+var delta = (target - normalized + 360) % 360;
+currentRotation += (4 + randomIndex(3)) * 360 + delta;
+el('rk-needle-turn').style.transform = 'rotate(' + currentRotation + 'deg)';
+window.setTimeout(function () {
+stopSpinSound();
+playLandingChime();
+button.disabled = false;
+usedQuestions.push(selected);
+saveState();
+updateProgress();
+el('rk-status').textContent = 'Выпал вопрос № ' + (selected + 1);
+renderQuestion(selected);
+}, 3500);
+}
+function showBonus() {
+var sector = bonusSectors[randomIndex(bonusSectors.length)];
+playLandingChime();
+renderSpecial(sector);
+}
+function backToQuestionWheel() {
+el('rk-status').textContent = usedQuestions.length ? 'Готовы к следующему ходу' : 'Готовы к первому ходу';
+showView(el('rk-wheel-view'));
+}
+function revealOrientir() {
+el("question-media").hidden=true;
+el('rk-card-title').hidden = true;
+el('rk-reveal').hidden = true;
+el('rk-orientir').hidden = false;
+el('rk-orientir').focus({ preventScroll: true });
+el('rk-orientir').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function renderSummary() {
+var list = el('rk-summary-list');
+list.innerHTML = '';
+if (!usedQuestions.length) {
+var empty = document.createElement('p');
+empty.className = 'rk-summary-empty';
+empty.textContent = 'Пока не открыто ни одного вопроса. Можно вернуться к компасу и сделать первый ход.';
+list.appendChild(empty);
+} else {
+usedQuestions.forEach(function (questionIndex) {
+var q = questions[questionIndex];
+var item = document.createElement('article');
+item.className = 'rk-summary-item';
+var topic = document.createElement('span');
+topic.textContent = q.topic;
+var text = document.createElement('p');
+text.textContent = q.orientirTitle;
+item.appendChild(topic);
+item.appendChild(text);
+list.appendChild(item);
+});
+}
+showView(el('rk-summary-view'));
+}
+function resetGame() {
+usedQuestions = [];
+currentRotation = 0;
+el('rk-needle-turn').style.transition = 'none';
+el('rk-needle-turn').style.transform = 'rotate(0deg)';
+window.setTimeout(function () { el('rk-needle-turn').style.transition = ''; }, 30);
+try { sessionStorage.removeItem(storageKey); } catch (error) {}
+updateProgress();
+resetSessionTimer();
+el('rk-status').textContent = 'Готовы к первому ходу';
+showView(el('rk-wheel-view'));
+}
+el('rk-spin').addEventListener('click', spinQuestion);
+el('rk-session-toggle').addEventListener('click', toggleSessionTimer);
+el('rk-reveal').addEventListener('click', revealOrientir);
+el('rk-next').addEventListener('click', function () {
+if (el('rk-special-card').hidden) { showBonus(); } else { backToQuestionWheel(); }
+});
+el('rk-back').addEventListener('click', function () { showView(el('rk-wheel-view')); });
+el('rk-finish-from-wheel').addEventListener('click', renderSummary);
+el('rk-finish-from-card').addEventListener('click', renderSummary);
+el('rk-continue').addEventListener('click', function () { showView(el('rk-wheel-view')); });
+el('rk-reset').addEventListener('click', resetGame);
+el('rk-summary-reset').addEventListener('click', resetGame);
+loadState();
+paintCompass();
+updateProgress();
+updateSessionDisplay();
+})();
+</script> </section> <style>body{margin:0;background:#faf8f6} .site-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 24px;font:15px system-ui;color:#456688} .site-nav a{color:inherit;text-decoration:none} #rk-app{height:calc(100dvh - 48px)} #rk-app .question-media{width:100%;margin:0 0 20px;text-align:center} #rk-app .media-tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:0 0 12px} #rk-app .media-tabs button{border:1px solid #c9d8e6;background:white;padding:8px 16px;border-radius:24px;color:#3f4652;cursor:pointer} #rk-app .media-tabs button[aria-pressed=true]{background:#5f86b0;color:white} #rk-app .question-media img{display:block;max-width:100%;width:auto;max-height:70vh;object-fit:contain;margin:auto;cursor:zoom-in} #rk-app .question-media a{display:block} #rk-app #rk-card-title{margin-bottom:12px} #rk-app #rk-card-view{display:block;overflow-y:auto} #rk-app .rk-header h1{font-size:clamp(1.3rem,3vw,2.3rem)} .extra-materials{max-width:1100px;margin:20px auto;padding:20px;font:16px system-ui;color:#3f4652} .extra-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:18px}.extra-grid img{width:100%;height:auto}.media-hint{font:12px system-ui;color:#77818a;margin:8px 0} @media(max-width:600px){.site-nav{padding:10px 12px} #rk-app .rk-header{flex-wrap:wrap} #rk-app .rk-header-right{gap:8px}#rk-app .question-media img{max-height:none;width:100%}}</style><details class="extra-materials" id="materials"><summary>Дополнительные карточки</summary><div class="extra-grid"><a href="assets/32451074060244e480.webp" target="_blank" rel="noopener"><img loading="lazy" src="assets/32451074060244e480.webp" alt="Дополнительная карточка"></a><a href="assets/f8e7e7ac94871c1779.webp" target="_blank" rel="noopener"><img loading="lazy" src="assets/f8e7e7ac94871c1779.webp" alt="Дополнительная карточка"></a><a href="assets/3f49cee77747a1b0fa.webp" target="_blank" rel="noopener"><img loading="lazy" src="assets/3f49cee77747a1b0fa.webp" alt="Дополнительная карточка"></a><a href="assets/b7910e0b81ba0d0efd.webp" target="_blank" rel="noopener"><img loading="lazy" src="assets/b7910e0b81ba0d0efd.webp" alt="Дополнительная карточка"></a><a href="assets/cf56a6869e696c1b04.webp" target="_blank" rel="noopener"><img loading="lazy" src="assets/cf56a6869e696c1b04.webp" alt="Дополнительная карточка"></a><a href="assets/ca224ab98bb8b4616e.webp" target="_blank" rel="noopener"><img loading="lazy" src="assets/ca224ab98bb8b4616e.webp" alt="Дополнительная карточка"></a><a href="assets/ac306a55f0a2e613aa.webp" target="_blank" rel="noopener"><img loading="lazy" src="assets/ac306a55f0a2e613aa.webp" alt="Дополнительная карточка"></a></div></details></body></html>
